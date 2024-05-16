@@ -1,5 +1,7 @@
 const Joi = require("joi");
 
+// Listing Schema
+
 module.exports.listingSchema = Joi.object({
   listing: Joi.object({
     title: Joi.string().required(),
@@ -10,6 +12,8 @@ module.exports.listingSchema = Joi.object({
     image: Joi.string().allow("", null),
   }).required(),
 });
+
+// Reveiw Schema
 
 module.exports.reviewSchema = Joi.object({
   review: Joi.object({

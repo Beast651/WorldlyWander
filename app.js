@@ -29,6 +29,8 @@ async function main() {
   await mongoose.connect("mongodb://127.0.0.1:27017/wanderlust");
 }
 
+// Server Side Error Handling for Listings
+
 const validateListing = (req, res, next) => {
   let { error } = listingSchema.validate(req.body);
   console.log(error);
@@ -40,6 +42,8 @@ const validateListing = (req, res, next) => {
     next();
   }
 };
+
+// Server Side Error Handling for Reviews
 
 const validateReview = (req, res, next) => {
   let { error } = reviewSchema.validate(req.body);
