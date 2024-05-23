@@ -12,17 +12,20 @@
       alt="listing-image"
     />
     <div class="card-body">
+      <p class="card-text">Owned by <i><%= details.owner.username %> </i></p>
+
+      <p class="card-text"><%= details.title %></p>
+      <p class="card-text"><%= details.description %></p>
       <p class="card-text">
-        <!-- <b><%= details.title %></b><br /> -->
-        <%= details.description %> <br />
-        &#8377; <%= details.price.toLocaleString("en-IN") %> <br />
-        <%= details.location %> <br />
-        <%= details.country %> <br />
+        &#8377; <%= details.price.toLocaleString("en-IN") %>
       </p>
+      <p class="card-text"><%= details.location %></p>
+      <p class="card-text"><%= details.country %></p>
     </div>
   </div>
 
   <br />
+
   <div class="btns mb-3">
     <a
       href="/listings/<%= details._id %>/edit"

@@ -1,23 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync");
-const ExpressError = require("../utils/ExpressError");
-const { listingSchema } = require("../schema");
 const Listing = require("../model/listing");
-
-// Server Side Error Handling for Listings
-
-const validateListing = (req, res, next) => {
-  let { error } = listingSchema.validate(req.body);
-  console.log(error);
-
-  if (error) {
-    let errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
+const { isLoggedIn, isOwner, validateListing } = require("../middleware");
 
 // Index Route
 
@@ -31,7 +16,7 @@ router.get(
 
 // New Route
 
-router.get("/new", (req, res) => {
+router.get("/new", isLoggedIn, (req, res) => {
   res.render("listings/new.ejs");
 });
 
@@ -39,6 +24,7 @@ router.get("/new", (req, res) => {
 
 router.post(
   "/",
+  isLoggedIn,
   validateListing,
   wrapAsync(async (req, res, next) => {
     // let { title, description, image, price, location, country } = req.body;
@@ -53,7 +39,7 @@ router.post(
     // });
 
     const dataAdd = new Listing(req.body.listing);
-
+    dataAdd.owner = req.user._id;
     await dataAdd.save();
     req.flash("success", "New Listing Created!");
 
@@ -65,6 +51,8 @@ router.post(
 
 router.get(
   "/:id/edit",
+  isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
     let editableContent = await Listing.findById(id);
@@ -81,6 +69,8 @@ router.get(
 
 router.delete(
   "/:id",
+  isLoggedIn,
+  isOwner,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
 
@@ -97,11 +87,14 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const details = await Listing.findById(id).populate("reviews");
+    const details = await Listing.findById(id)
+      .populate("reviews")
+      .populate("owner");
     if (!details) {
       req.flash("error", "Listing you requested for does not exist!");
       res.redirect("/listings");
     }
+    console.log(details);
     res.render("listings/show.ejs", { details });
   })
 );
@@ -110,6 +103,8 @@ router.get(
 
 router.put(
   "/:id",
+  isLoggedIn,
+  isOwner,
   validateListing,
   wrapAsync(async (req, res) => {
     let { id } = req.params;
