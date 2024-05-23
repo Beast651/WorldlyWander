@@ -34,7 +34,7 @@ const sessionOptions = {
 };
 
 app.get("/", (req, res) => {
-  res.send("HI I AM ROOT");
+  res.redirect("/listings");
 });
 
 app.use(session(sessionOptions));
