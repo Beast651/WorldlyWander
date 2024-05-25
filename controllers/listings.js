@@ -20,9 +20,12 @@ module.exports.createListing = async (req, res, next) => {
   //   location: location,
   //   country: country,
   // });
+  let url = req.file.path;
+  let filename = req.file.filename;
 
   const dataAdd = new Listing(req.body.listing);
   dataAdd.owner = req.user._id;
+  dataAdd.image = { url, filename };
   await dataAdd.save();
   req.flash("success", "New Listing Created!");
 
